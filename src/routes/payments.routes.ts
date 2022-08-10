@@ -1,13 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import mercadopago from "mercadopago";
 
-mercadopago.configurations.setAccessToken(
-  "TEST-6937510609951197-080707-7ef18dccd49bd70508fe6363fdccf0b4-124534893"
-);
+mercadopago.configurations.setAccessToken(process.env.MERCADOPAGO_TOKEN);
 
 const paymentsRoutes = Router();
+const prisma = new PrismaClient();
 
-paymentsRoutes.post("/payment/card", (request, response) => {
+paymentsRoutes.post("/card", (request, response) => {
   const {
     transaction_amount,
     token,
@@ -34,9 +34,21 @@ paymentsRoutes.post("/payment/card", (request, response) => {
     },
   };
 
+  // create payment in gateway
   mercadopago.payment
     .save(payment_data)
-    .then((res) => {
+    .then(async (res) => {
+      // create record in database
+      await prisma.payments.create({
+        data: {
+          payment_id: res.body.id,
+          price: transaction_amount,
+          status: res.body.status,
+          status_detail: res.body.status_detail,
+        },
+      });
+
+      // response json user
       response.status(res.status).json({
         status: res.body.status,
         status_detail: res.body.status_detail,
@@ -50,7 +62,7 @@ paymentsRoutes.post("/payment/card", (request, response) => {
     });
 });
 
-paymentsRoutes.post("/payment/others", (request, response) => {
+paymentsRoutes.post("/others", (request, response) => {
   const { transaction_amount, description, payment_method_id, payer } =
     request.body;
 
@@ -69,11 +81,22 @@ paymentsRoutes.post("/payment/others", (request, response) => {
     },
   };
 
+  // create payment in gateway
   mercadopago.payment
     .create(payment_data)
-    .then((res) => {
-      console.log(res);
+    .then(async (res) => {
       if (payment_method_id === "pix") {
+        // create record in database
+        await prisma.payments.create({
+          data: {
+            payment_id: res.response.id,
+            price: transaction_amount,
+            status: res.response.status,
+            status_detail: res.response.status_detail,
+          },
+        });
+
+        // response json user
         response.status(res.status).json({
           id: res.response.id,
           date_created: res.response.date_created,
@@ -94,8 +117,21 @@ paymentsRoutes.post("/payment/others", (request, response) => {
             },
           },
         });
+
+        return;
       }
 
+      // create record in database
+      await prisma.payments.create({
+        data: {
+          payment_id: res.response.id,
+          price: transaction_amount,
+          status: res.response.status,
+          status_detail: res.response.status_detail,
+        },
+      });
+
+      // response json user
       response.status(res.status).json({
         id: res.response.id,
         date_created: res.response.date_created,
