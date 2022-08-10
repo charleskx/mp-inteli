@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "payments" (
     "id" TEXT NOT NULL,
-    "payment_id" TEXT NOT NULL,
+    "payment_id" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "status" TEXT NOT NULL,
     "status_detail" TEXT NOT NULL,
