@@ -4,6 +4,7 @@ import express from "express";
 import { paymentsRoutes } from "./routes/payments.routes";
 
 const app = express();
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
@@ -13,4 +14,4 @@ app.get("/", (_, response) => {
 });
 app.use("/payments", paymentsRoutes);
 
-app.listen(3333, () => console.log("Server is running!"));
+app.listen(port, () => console.log("Server is running!"));
