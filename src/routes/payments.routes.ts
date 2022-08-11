@@ -1,7 +1,9 @@
 import { Router } from "express";
 import mercadopago from "mercadopago";
 
-mercadopago.configurations.setAccessToken(process.env.MERCADOPAGO_TOKEN);
+mercadopago.configure({
+  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN ?? "",
+});
 
 const paymentsRoutes = Router();
 
@@ -32,7 +34,6 @@ paymentsRoutes.post("/card", (request, response) => {
     },
   };
 
-  // create payment in gateway
   mercadopago.payment
     .save(payment_data)
     .then(async (res) => {
@@ -68,12 +69,10 @@ paymentsRoutes.post("/ticket", (request, response) => {
     },
   };
 
-  // create payment in gateway
   mercadopago.payment
     .create(payment_data)
     .then(async (res) => {
       if (payment_method_id === "pix") {
-        // response json user
         response.status(res.status).json({
           id: res.response.id,
           date_created: res.response.date_created,
@@ -96,7 +95,6 @@ paymentsRoutes.post("/ticket", (request, response) => {
         });
       }
 
-      // response json user
       response.status(res.status).json({
         id: res.response.id,
         date_created: res.response.date_created,

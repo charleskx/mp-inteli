@@ -2,7 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import mercadopago from "mercadopago";
 
-mercadopago.configurations.setAccessToken(process.env.MERCADOPAGO_TOKEN);
+mercadopago.configure({
+  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN ?? "",
+});
 
 const webhooksRoutes = Router();
 const prisma = new PrismaClient();
@@ -28,10 +30,11 @@ webhooksRoutes.post("/", async (request, response) => {
       update: {
         status: payment.body.status,
         status_detail: payment.body.status_detail,
+        payment_updated_at: payment.body.date_last_updated,
       },
     });
 
-    response.status(201).json(payment);
+    response.status(200).json(payment);
   }
 
   response.status(400).send();
