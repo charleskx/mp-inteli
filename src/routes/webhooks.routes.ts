@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 webhooksRoutes.post("/", async (request, response) => {
   const { data, type } = request.body;
 
-  // const id = Number(data.id);
+  const id = Number(data.id);
 
   // if (type === "payment") {
   //   const payment = await mercadopago.payment.findById(id);
@@ -34,7 +34,7 @@ webhooksRoutes.post("/", async (request, response) => {
   //   response.status(201).json(payment);
   // }
 
-  if (type === "test") {
+  if (type === "test" && id) {
     response.status(200).send();
   }
 
