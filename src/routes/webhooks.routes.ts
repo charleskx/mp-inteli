@@ -34,7 +34,11 @@ webhooksRoutes.post("/", async (request, response) => {
   //   response.status(201).json(payment);
   // }
 
-  response.status(200).json({ teste: request.body });
+  if (type === "test") {
+    response.status(200).send();
+  }
+
+  response.status(400).send();
 });
 
 export { webhooksRoutes };
