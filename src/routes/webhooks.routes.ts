@@ -33,6 +33,8 @@ webhooksRoutes.post("/", async (request, response) => {
 
     response.status(201).json(payment);
   }
+
+  response.status(200).send();
 });
 
 export { webhooksRoutes };
