@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import mercadopago from "mercadopago";
 
 mercadopago.configurations.setAccessToken(process.env.MERCADOPAGO_TOKEN);
 
 const paymentsRoutes = Router();
-const prisma = new PrismaClient();
 
 paymentsRoutes.post("/card", (request, response) => {
   const {
@@ -38,17 +36,6 @@ paymentsRoutes.post("/card", (request, response) => {
   mercadopago.payment
     .save(payment_data)
     .then(async (res) => {
-      // create record in database
-      await prisma.payments.create({
-        data: {
-          payment_id: res.body.id,
-          price: transaction_amount,
-          status: res.body.status,
-          status_detail: res.body.status_detail,
-        },
-      });
-
-      // response json user
       response.status(res.status).json({
         status: res.body.status,
         status_detail: res.body.status_detail,
@@ -62,7 +49,7 @@ paymentsRoutes.post("/card", (request, response) => {
     });
 });
 
-paymentsRoutes.post("/others", (request, response) => {
+paymentsRoutes.post("/ticket", (request, response) => {
   const { transaction_amount, description, payment_method_id, payer } =
     request.body;
 
@@ -86,16 +73,6 @@ paymentsRoutes.post("/others", (request, response) => {
     .create(payment_data)
     .then(async (res) => {
       if (payment_method_id === "pix") {
-        // create record in database
-        await prisma.payments.create({
-          data: {
-            payment_id: res.response.id,
-            price: transaction_amount,
-            status: res.response.status,
-            status_detail: res.response.status_detail,
-          },
-        });
-
         // response json user
         response.status(res.status).json({
           id: res.response.id,
@@ -117,19 +94,7 @@ paymentsRoutes.post("/others", (request, response) => {
             },
           },
         });
-
-        return;
       }
-
-      // create record in database
-      await prisma.payments.create({
-        data: {
-          payment_id: res.response.id,
-          price: transaction_amount,
-          status: res.response.status,
-          status_detail: res.response.status_detail,
-        },
-      });
 
       // response json user
       response.status(res.status).json({
