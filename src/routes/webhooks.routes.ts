@@ -15,7 +15,7 @@ webhooksRoutes.post("/", async (request, response) => {
   if (type === "payment") {
     const payment = await mercadopago.payment.findById(id);
 
-    prisma.payments.upsert({
+    await prisma.payments.upsert({
       where: {
         payment_id: id,
       },
