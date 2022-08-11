@@ -8,11 +8,13 @@ const webhooksRoutes = Router();
 const prisma = new PrismaClient();
 
 webhooksRoutes.post("/", async (request, response) => {
-  const { data_id, type } = request.query;
+  const { type } = request.query;
+  const { data } = request.body;
 
-  const id = Number(data_id);
+  const id = Number(data.id);
 
-  if (type === "payment") {
+  // if (type === "payment") {
+  if (id) {
     const payment = await mercadopago.payment.findById(id);
 
     await prisma.payments.upsert({
