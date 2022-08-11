@@ -8,35 +8,33 @@ const webhooksRoutes = Router();
 const prisma = new PrismaClient();
 
 webhooksRoutes.post("/", async (request, response) => {
-  const { type } = request.query;
-  const { data } = request.body;
+  const { data, type } = request.body;
 
-  const id = Number(data.id);
+  // const id = Number(data.id);
 
   // if (type === "payment") {
-  if (id) {
-    const payment = await mercadopago.payment.findById(id);
+  //   const payment = await mercadopago.payment.findById(id);
 
-    await prisma.payments.upsert({
-      where: {
-        payment_id: id,
-      },
-      create: {
-        payment_id: id,
-        price: payment.body.transaction_amount,
-        status: payment.body.status,
-        status_detail: payment.body.status_detail,
-      },
-      update: {
-        status: payment.body.status,
-        status_detail: payment.body.status_detail,
-      },
-    });
+  //   await prisma.payments.upsert({
+  //     where: {
+  //       payment_id: id,
+  //     },
+  //     create: {
+  //       payment_id: id,
+  //       price: payment.body.transaction_amount,
+  //       status: payment.body.status,
+  //       status_detail: payment.body.status_detail,
+  //     },
+  //     update: {
+  //       status: payment.body.status,
+  //       status_detail: payment.body.status_detail,
+  //     },
+  //   });
 
-    response.status(201).json(payment);
-  }
+  //   response.status(201).json(payment);
+  // }
 
-  response.status(200).send();
+  response.status(200).json({ teste: request.body });
 });
 
 export { webhooksRoutes };
