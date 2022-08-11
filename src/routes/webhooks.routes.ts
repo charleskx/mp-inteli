@@ -26,6 +26,8 @@ webhooksRoutes.post("/", async (request, response) => {
         price: payment.body.transaction_amount,
         status: payment.body.status,
         status_detail: payment.body.status_detail,
+        payment_created_at: payment.body.date_created,
+        payment_updated_at: payment.body.date_last_updated,
       },
       update: {
         status: payment.body.status,
