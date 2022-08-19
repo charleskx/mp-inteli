@@ -42,4 +42,10 @@ webhooksRoutes.post("/", async (request, response) => {
   response.status(400).send();
 });
 
+webhooksRoutes.get("/", async (request, response) => {
+  const payments = await mercadopago.payment.get(Number(request.query.id));
+
+  response.status(200).json(payments);
+});
+
 export { webhooksRoutes };
