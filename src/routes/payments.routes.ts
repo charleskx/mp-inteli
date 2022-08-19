@@ -93,6 +93,8 @@ paymentsRoutes.post("/ticket", (request, response) => {
             },
           },
         });
+
+        return;
       }
 
       response.status(res.status).json({
